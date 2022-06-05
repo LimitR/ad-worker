@@ -1,6 +1,6 @@
 {
   "name": "add-worker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Lib for work to multiple thread (Node.js)",
   "main": "index.js",
   "scripts": {
