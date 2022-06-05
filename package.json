@@ -4,7 +4,7 @@
   "description": "Lib for work to multiple thread (Node.js)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\""
   },
   "author": "LimitR",
   "license": "ISC"
