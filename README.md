@@ -1,5 +1,9 @@
 # ad-worker
 
+```shell
+npm i ad-worker
+```
+
 ```javascript
 // main.js
 const { MainWorker } = require("ad-worker");
