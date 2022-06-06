@@ -33,10 +33,10 @@ module.exports = class MainWorker {
      * @param {*} message Your message (string|object|nubmer)
      */
     sendMessage(name, message) {
-        if (!this.#gruop[name]) {
+        if (!this.#group[name]) {
             throw Error("AddWorker: not found this name group - " + name);
         }
-        this.#gruop[name].postMessage(message);
+        this.#group[name].postMessage(message);
     }
 
     /**
@@ -45,10 +45,10 @@ module.exports = class MainWorker {
      * @description Event "message"
      */
     onMessage(name, callback) {
-        if (!this.#gruop[name]) {
+        if (!this.#group[name]) {
             throw Error("AddWorker: not found this name group - " + name);
         }
-        this.#gruop[name].on("message", callback);
+        this.#group[name].on("message", callback);
     }
 
     /**
@@ -56,10 +56,10 @@ module.exports = class MainWorker {
      * @returns {*} Class Worker
      */
     getThread(name) {
-        if (!this.#gruop[name]) {
+        if (!this.#group[name]) {
             throw Error("AddWorker: not found this name group - " + name);
         }
-        return this.#gruop[name];
+        return this.#group[name];
     }
 
     /**
@@ -68,10 +68,10 @@ module.exports = class MainWorker {
      * @description Using for stoped thread
      */
     stopThread(name) {
-        if (!this.#gruop[name]) {
+        if (!this.#group[name]) {
             throw Error("AddWorker: not found this name group - " + name);
         }
-        return this.#gruop[name].terminate();
+        return this.#group[name].terminate();
     }
 
     /**
@@ -80,7 +80,7 @@ module.exports = class MainWorker {
      * @description Using for getting share data
      */
     getSharedData(name, callback) {
-        if (!this.#gruop[name]) {
+        if (!this.#group[name]) {
             throw Error("AddWorker: not found this name group - " + name);
         }
         callback(this.#sharedData[name].deserialize());
