@@ -1,11 +1,26 @@
 {
   "name": "ad-worker",
   "version": "1.0.6",
-  "description": "Lib for work to multiple thread (Node.js)",
+  "description": "Library for creating and managing threads (Node.js )",
   "main": "index.js",
   "scripts": {
     "test": "echo \"No test specified\""
   },
   "author": "LimitR",
-  "license": "ISC"
+  "license": "ISC",
+  "directories": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LimitR/ad-worker.git"
+  },
+  "keywords": [
+    "worker",
+    "thread",
+    "threads",
+    "stream"
+  ],
+  "bugs": {
+    "url": "https://github.com/LimitR/ad-worker/issues"
+  },
+  "homepage": "https://github.com/LimitR/ad-worker#readme"
 }

@@ -3,13 +3,13 @@
 ```shell
 npm i ad-worker
 ```
-
+This library allows spawn threads and transfer control by name, with an isolated context, or shared data between threads.
 ```javascript
 // main.js
 const { MainWorker } = require("ad-worker");
 
 const mainWorker = new MainWorker({
-    gruop: [
+    group: [
         { name: "test", path: "./worker.js", workerData: { ok: "ok" }, mutex: 1 },
         { name: "test_2", path: "./worker_2.js", workerDataLink: "test" },
         { name: "test_3", path: "./worker.js", workerDataLink: "test" },
@@ -19,7 +19,24 @@ const mainWorker = new MainWorker({
         type: "int32"
     }
 });
-mainWorker.newThread({ name: "test_4", path: "./worker.js" })
+// Or
+const mainWorker = new MainWorker({});
+
+mainWorker.newThread({
+    name: "test",
+    path: "./worker.js",
+    sharedData: {
+        length: 1024,
+        type: "int32"
+    },
+    workerData: { hello: "world" }
+});
+
+mainWorker.newThread({
+    name: "test",
+    path: "./worker.js",
+    workerDataLink: "test"
+});
 ```
 
 ```javascript

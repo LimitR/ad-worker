@@ -7,9 +7,15 @@ module.exports = class MainWorker {
     #sharedData = {};
     /**
      * @param {Object} params
-     * @param {Array} params.group
+     * @param {Object[]} params.group
+     * @param {string} params.group[].name
+     * @param {string} params.group[].path
+     * @param {Object} [params.group[].workerData]
+     * @param {string} [params.group[].workerDataLink]
+     * @param {number} params.group[].mutex
      * @param {Object} params.sharedData
-     * @param {number} params.mutex
+     * @param {number} params.sharedData.length Size BufferArray
+     * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} params.sharedData.type Type BufferArray
      */
     constructor({ group = [], sharedData, mutex = 1 }) {
         this.#group = Object.assign({}, ...group.map(({ name, path, workerData, workerDataLink }) => {
@@ -86,14 +92,25 @@ module.exports = class MainWorker {
         callback(this.#sharedData[name].deserialize());
     }
 
-    newThread({ name, path, workerData, sharedData, workerDataLink, mutex = 1 }) {
+    /**
+     * @param {Object} params
+     * @param {string} params.name
+     * @param {string} params.path
+     * @param {Object} [params.workerData]
+     * @param {string} [params.workerDataLink]
+     * @param {number} params.mutex
+     * @param {Object} params.sharedData
+     * @param {number} params.sharedData.length Size BufferArray
+     * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} params.sharedData.type Type BufferArray
+     */
+    newThread({ name, path, workerData, sharedData = {length: 1024, type: "int32"}, workerDataLink, mutex = 1 }) {
         if (this.#group[name] !== undefined) throw Error("It's name using");
         if (workerDataLink) {
             this.#group[name] = new Worker(path, this.#sharedData[workerDataLink]);
             return;
         }
         if (workerData) {
-            const shar = new SharedData(sharedData);
+            const shar = new SharedData(...sharedData);
             shar.mutex(mutex);
             shar.add(workerData);
             this.#sharedData[name] = shar;
