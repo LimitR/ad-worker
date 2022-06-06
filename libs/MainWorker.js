@@ -3,26 +3,26 @@ const { Worker } = require('node:worker_threads');
 const SharedData = require("./SharedData");
 
 module.exports = class MainWorker {
-    #gruop;
+    #group;
     #sharedData = {};
     /**
      * @param {Object} params
-     * @param {Array} params.gruop
+     * @param {Array} params.group
      * @param {Object} params.sharedData
      * @param {number} params.mutex
      */
-    constructor({ gruop = [], sharedData, mutex = 1 }) {
-        this.#gruop = Object.assign({}, ...gruop.map(({ name, path, workerData, workerDataLink }) => {
+    constructor({ group = [], sharedData, mutex = 1 }) {
+        this.#group = Object.assign({}, ...group.map(({ name, path, workerData, workerDataLink }) => {
             if (workerDataLink) {
                 this.#sharedData[name] = this.#sharedData[workerDataLink];
-                return { [name]: new Worker(path, { workerData: {sharedData: sharedData, value: this.#sharedData[name].na_get()} }) };
+                return { [name]: new Worker(path, { workerData: { sharedData: sharedData, value: this.#sharedData[name].na_get() } }) };
             }
             if (sharedData) {
                 if (mutex < 1) throw Error("MainWorker: mutex can not less one - " + name);
                 this.#sharedData[name] = new SharedData(sharedData.length, sharedData.type);
                 this.#sharedData[name].mutex(mutex);
                 this.#sharedData[name].add(workerData);
-                return { [name]: new Worker(path, { workerData: {sharedData: sharedData, value: this.#sharedData[name].na_get()} }) };
+                return { [name]: new Worker(path, { workerData: { sharedData: sharedData, value: this.#sharedData[name].na_get() } }) };
             }
             return { [name]: new Worker(path) };
         }));
@@ -84,5 +84,24 @@ module.exports = class MainWorker {
             throw Error("AddWorker: not found this name group - " + name);
         }
         callback(this.#sharedData[name].deserialize());
+    }
+
+    newThread({ name, path, workerData, sharedData, workerDataLink, mutex = 1 }) {
+        if (this.#group[name] !== undefined) throw Error("It's name using");
+        if (workerDataLink) {
+            this.#group[name] = new Worker(path, this.#sharedData[workerDataLink]);
+            return;
+        }
+        if (workerData) {
+            const shar = new SharedData(sharedData);
+            shar.mutex(mutex);
+            shar.add(workerData);
+            this.#sharedData[name] = shar;
+            this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: shar.na_get() } });
+            return;
+        }
+        const shar = new SharedData(...sharedData);
+        shar.add({});
+        this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: shar.na_get() } });
     }
 }

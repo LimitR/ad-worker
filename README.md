@@ -19,6 +19,7 @@ const mainWorker = new MainWorker({
         type: "int32"
     }
 });
+mainWorker.newThread({ name: "test_4", path: "./worker.js" })
 ```
 
 ```javascript
