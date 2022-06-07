@@ -4,6 +4,7 @@
 npm i ad-worker
 ```
 This library allows spawn threads and transfer control by name, with an isolated context, or shared data between threads.
+## Example
 ```javascript
 // main.js
 const { MainWorker } = require("ad-worker");
@@ -34,8 +35,7 @@ mainWorker.newThread({
 
 mainWorker.newThread({
     name: "test",
-    path: "./worker.js",
-    workerDataLink: "test"
+    path: "./worker.js"
 });
 ```
 
@@ -48,14 +48,17 @@ const childWorker = new ChildWorker(workerData);
 
 childWorker.setSharedData({ hello: "world" });
 childWorker.sendMessage("change");
-childWorker.lock();
+childWorker.lock(()=>{
+    childWorker.onMessage(msg => {
+        console.log(msg); // Some message
+        childWorker.unlock();
+    });
+});
 
 childWorker.onMessage(msg => {
     console.log(msg);
 });
 childWorker.sendMessage("ok");
-
-childWorker.unlock();
 
 childWorker.close();
 

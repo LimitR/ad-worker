@@ -110,15 +110,17 @@ module.exports = class MainWorker {
             return;
         }
         if (workerData) {
-            const shar = new SharedData(...sharedData);
+            const shar = new SharedData(sharedData.length, sharedData.type);
             shar.mutex(mutex);
             shar.add(workerData);
             this.#sharedData[name] = shar;
-            this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: shar.na_get() } });
+            this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: this.#sharedData[name].na_get() } });
             return;
         }
-        const shar = new SharedData(...sharedData);
+        const shar = new SharedData(sharedData.length, sharedData.type);
         shar.add({});
-        this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: shar.na_get() } });
+        shar.mutex(mutex);
+        this.#sharedData[name] = shar;
+        this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: this.#sharedData[name].na_get() } });
     }
 }
