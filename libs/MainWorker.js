@@ -1,5 +1,5 @@
 "use strict";
-const { Worker } = require('node:worker_threads');
+const { Worker, isMainThread } = require('node:worker_threads');
 const SharedData = require("./SharedData");
 
 module.exports = class MainWorker {
@@ -18,6 +18,7 @@ module.exports = class MainWorker {
      * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} params.sharedData.type Type BufferArray
      */
     constructor({ group = [], sharedData, mutex = 1 }) {
+        this.path = __filename;
         this.#group = Object.assign({}, ...group.map(({ name, path, workerData, workerDataLink }) => {
             if (workerDataLink) {
                 this.#sharedData[name] = this.#sharedData[workerDataLink];
@@ -122,5 +123,13 @@ module.exports = class MainWorker {
         shar.mutex(mutex);
         this.#sharedData[name] = shar;
         this.#group[name] = new Worker(path, { workerData: { sharedData: sharedData, value: this.#sharedData[name].na_get() } });
+    }
+
+    spawn(callback){
+        if(isMainThread){
+            new Worker((new Error()).stack.split("\n")[2].split("/").join("/").split("(")[1].split(":")[0]);
+        }else {
+            return callback();
+        }
     }
 }

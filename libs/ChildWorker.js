@@ -1,11 +1,11 @@
 "use strict";
-const { parentPort } = require('node:worker_threads');
+const { parentPort, workerData } = require('node:worker_threads');
 const SharedData = require("./SharedData");
 module.exports = class ChildWorker {
     #sharedData;
-    constructor(workerData = {sharedData: {length: 1024, type: "int32"}, value: {}}) {
-        this.#sharedData = new SharedData(workerData.sharedData.length, workerData.sharedData.type);
-        this.#sharedData.add(workerData.value);
+    constructor(_workerData = {sharedData: {length: 1024, type: "int32"}, value: workerData || {}}) {
+        this.#sharedData = new SharedData(_workerData.sharedData.length, _workerData.sharedData.type);
+        this.#sharedData.add(_workerData.value || workerData);
     }
     onMessage(callback) {
         parentPort.on("message", callback);

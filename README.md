@@ -37,6 +37,11 @@ mainWorker.newThread({
     name: "test",
     path: "./worker.js"
 });
+
+// Or
+mainWorker.spawn(()=>{
+    console.log("New thread, in this file");
+});
 ```
 
 ```javascript
