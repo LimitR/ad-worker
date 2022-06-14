@@ -19,6 +19,9 @@ module.exports = class ChildWorker {
     setSharedData(msg) {
         this.#sharedData.add(msg);
     }
+    getSharedData() {
+        return this.#sharedData.deserialize();
+    }
     /**
      * @description Close thread
      */
