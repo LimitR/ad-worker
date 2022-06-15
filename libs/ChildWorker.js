@@ -10,6 +10,9 @@ module.exports = class ChildWorker {
     onMessage(callback) {
         parentPort.on("message", callback);
     }
+    onceMessage(callback) {
+        parentPort.once("message", callback);
+    }
     sendMessage(msg) {
         parentPort.postMessage(msg);
     }

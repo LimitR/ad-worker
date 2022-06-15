@@ -60,6 +60,18 @@ module.exports = class MainWorker {
 
     /**
      * @param {string} name Name thread
+     * @param {*} callback
+     * @description Event "message"
+     */
+     onceMessage(name, callback) {
+        if (!this.#group[name]) {
+            throw Error("AddWorker: not found this name group - " + name);
+        }
+        this.#group[name].once("message", callback);
+    }
+
+    /**
+     * @param {string} name Name thread
      * @returns {*} Class Worker
      */
     getThread(name) {
