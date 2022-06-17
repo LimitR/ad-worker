@@ -90,7 +90,9 @@ module.exports = class MainWorker {
         if (!this.#group[name]) {
             throw Error("AddWorker: not found this name group - " + name);
         }
-        return this.#group[name].terminate();
+        const code = this.#group[name].terminate();
+        delete this.#group[name];
+        return code;
     }
 
     /**
