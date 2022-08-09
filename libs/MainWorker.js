@@ -25,7 +25,7 @@ module.exports = class MainWorker {
                 return { [name]: new Worker(path, { workerData: { sharedData: sharedData, value: this.#sharedData[name].na_get() } }) };
             }
             if (sharedData) {
-                if (mutex < 1) throw Error("MainWorker: mutex can not less one - " + name);
+                if (mutex < 1) return Error("MainWorker: mutex can not less one - " + name);
                 this.#sharedData[name] = new SharedData(sharedData.length, sharedData.type);
                 this.#sharedData[name].mutex(mutex);
                 this.#sharedData[name].add(workerData);
@@ -41,7 +41,7 @@ module.exports = class MainWorker {
      */
     sendMessage(name, message) {
         if (!this.#group[name]) {
-            throw Error("AddWorker: not found this name group - " + name);
+            return Error("AddWorker: not found this name group - " + name);
         }
         this.#group[name].postMessage(message);
     }
@@ -53,7 +53,7 @@ module.exports = class MainWorker {
      */
     onMessage(name, callback) {
         if (!this.#group[name]) {
-            throw Error("AddWorker: not found this name group - " + name);
+            return Error("AddWorker: not found this name group - " + name);
         }
         this.#group[name].on("message", callback);
     }
@@ -65,7 +65,7 @@ module.exports = class MainWorker {
      */
      onceMessage(name, callback) {
         if (!this.#group[name]) {
-            throw Error("AddWorker: not found this name group - " + name);
+            return Error("AddWorker: not found this name group - " + name);
         }
         this.#group[name].once("message", callback);
     }
@@ -76,7 +76,7 @@ module.exports = class MainWorker {
      */
     getThread(name) {
         if (!this.#group[name]) {
-            throw Error("AddWorker: not found this name group - " + name);
+            return Error("AddWorker: not found this name group - " + name);
         }
         return this.#group[name];
     }
@@ -88,7 +88,7 @@ module.exports = class MainWorker {
      */
     stopThread(name) {
         if (!this.#group[name]) {
-            throw Error("AddWorker: not found this name group - " + name);
+            return Error("AddWorker: not found this name group - " + name);
         }
         const code = this.#group[name].terminate();
         delete this.#group[name];
@@ -102,7 +102,7 @@ module.exports = class MainWorker {
      */
     getSharedData(name, callback) {
         if (!this.#group[name]) {
-            throw Error("AddWorker: not found this name group - " + name);
+            return Error("AddWorker: not found this name group - " + name);
         }
         callback(this.#sharedData[name].deserialize());
     }
@@ -119,7 +119,7 @@ module.exports = class MainWorker {
      * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} params.sharedData.type Type BufferArray
      */
     newThread({ name, path, workerData, sharedData = {length: 1024, type: "int32"}, workerDataLink, mutex = 1 }) {
-        if (this.#group[name] !== undefined) throw Error("It's name using");
+        if (this.#group[name] !== undefined) return Error("It's name using");
         if (workerDataLink) {
             this.#group[name] = new Worker(path, this.#sharedData[workerDataLink]);
             return;
@@ -146,4 +146,5 @@ module.exports = class MainWorker {
             return callback();
         }
     }
+    pool(){}
 }
