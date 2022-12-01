@@ -1,11 +1,10 @@
 "use strict";
 const { parentPort, workerData } = require('node:worker_threads');
-const SharedData = require("./SharedData");
+const v8 = require('v8');
 module.exports = class ChildWorker {
     #sharedData;
-    constructor(_workerData = {sharedData: {length: 1024, type: "int32"}, value: workerData || {}}) {
-        this.#sharedData = new SharedData(_workerData.sharedData.length, _workerData.sharedData.type);
-        this.#sharedData.add(_workerData.value || workerData);
+    constructor() {
+        this.#sharedData = Buffer.from(workerData || {})
     }
     onMessage(callback) {
         parentPort.on("message", callback);
@@ -20,29 +19,33 @@ module.exports = class ChildWorker {
      * @param {*} msg Your data
      */
     setSharedData(msg) {
-        this.#sharedData.add(msg);
+        v8.serialize(msg).forEach((element, index) => {
+            this.#sharedData[index] = element;
+        });
     }
     getSharedData() {
-        return this.#sharedData.deserialize();
+        return v8.deserialize(
+            Buffer.from(workerData)
+        );
     }
     /**
      * @description Close thread
      */
-    close(){
+    close() {
         parentPort.close();
     }
     /**
      * @param {callback|null} callback
      * @description Lock thread, if this owner
      */
-    lock(callback){
+    lock(callback) {
         this.#sharedData.lock(callback)
     }
     /**
      * @param {callback|null} callback
      * @description Unlock thread, if this owner
      */
-    unlock(callback){
+    unlock(callback) {
         this.#sharedData.unlock(callback)
     }
 }

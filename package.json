@@ -1,8 +1,15 @@
 {
   "name": "ad-worker",
-  "version": "1.0.13",
+  "version": "2.0.0",
   "description": "Library for creating and managing threads (Node.js )",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "types": {
+        "default": "./index.d.ts"
+      }
+    }
+  },
   "scripts": {
     "test": "echo \"No test specified\""
   },
@@ -22,5 +29,11 @@
   "bugs": {
     "url": "https://github.com/LimitR/ad-worker/issues"
   },
-  "homepage": "https://github.com/LimitR/ad-worker#readme"
+  "homepage": "https://github.com/LimitR/ad-worker#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.10"
+  },
+  "dependencies": {
+    "np": "^7.6.2"
+  }
 }

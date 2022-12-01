@@ -87,3 +87,27 @@ mainWorker.getSharedData("test", msg => {
     console.log(msg); // { ok: "ok" }
 })
 ```
+
+
+```javascript
+// main.js
+const { Pool }  = require("ad-worker");
+
+const threadPool = new Pool({ path: './test.js', quantityThread: 10 })
+threadPool.sendMessage('SELECT * FROM table', (res) => {
+    console.log(res); // ['Sasha', 'Pasha', 'Oleg']
+})
+
+// worker.js
+const { ChildWorker } = require('./index.js');
+const db = new Db();
+const childWorker = new ChildWorker();
+
+childWorker.onMessage(async (msg) => {
+    const res = await db.query(msg);
+    childWorker.sendMessage(res);
+    // Or
+    childWorker.setSharedData(res);
+    childWorker.sendMessage('done');
+});
+```

@@ -2,28 +2,17 @@
 const v8 = require('v8');
 module.exports = class SharedData {
     #data;
-    #owner;
-    #typeConfigurator = {
-        "int8": (data) => new Int8Array(data),
-        "int16": (data) => new Int16Array(data),
-        "int32": (data) => new Int32Array(data),
-        "uint8": (data) => new Uint8Array(data),
-        "uint16": (data) => new Uint16Array(data),
-        "uint32": (data) => new Uint32Array(data),
-        "float32": (data) => new Float32Array(data),
-        "float64": (data) => new Float64Array(data),
-    };
-    #type;
+    #shareDataBuffer;
     /**
      * @param {number} length Size BufferArray
      * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} type Type BufferArray
      * @default type int32
      * @default length 1024
      */
-    constructor(length = 1024, type) {
-        this.#type = type || "int32";
-        this.#data = this.#typeConfigurator[type || "int32"](new SharedArrayBuffer(length));
-        this.#data[0] = 1;
+    constructor(length = 1024, type = "int32") {
+        this.#type = type;
+        this.#shareDataBuffer = new SharedArrayBuffer(length);
+        this.#data = Buffer.from(this.#shareDataBuffer);
         this.#owner = false;
     }
     /**
@@ -32,7 +21,7 @@ module.exports = class SharedData {
      * @returns {SharedData}
      */
     new(data) {
-        this.#data = data;
+        this.#data = Buffer.from(data);
         return this;
     }
     /**
@@ -42,8 +31,8 @@ module.exports = class SharedData {
     add(data) {
         Atomics.wait(this.#data, 0, 0);
         Atomics.sub(this.#data, 0, 1);
-        v8.serialize(data).map((element, index) => {
-            Atomics.store(this.#data, index + 1, element)
+        v8.serialize(data).forEach((element, index) => {
+            Atomics.store(this.#data, index, element)
         });
         Atomics.add(this.#data, 0, 1);
         Atomics.notify(this.#data, 0, 1);
@@ -54,8 +43,8 @@ module.exports = class SharedData {
      * @description Not atomics method
      */
     na_add(data) {
-        v8.serialize(data).map((element, index) => {
-            this.#data[index + 1] = element;
+        v8.serialize(data || this.#data).forEach((element, index) => {
+            this.#data[index] = element;
         });
     }
     /**
@@ -63,7 +52,7 @@ module.exports = class SharedData {
      * @returns {number[]} Array bytes
      */
     na_get() {
-        return this.#data;
+        return this.#shareDataBuffer;
     }
     /**
      * @param {number} from from index
@@ -73,12 +62,10 @@ module.exports = class SharedData {
     get(from, to) {
         Atomics.wait(this.#data, 0, 0)
         const result = [];
-        this.#data[0] -= 1
         while (from < to) {
-            result.push(Atomics.load(this.#data, from + 1))
+            result.push(Atomics.load(this.#data, from))
             from++;
         }
-        this.#data[0] += 1
         Atomics.notify(this.#data, 0, 1);
 
         return result;
@@ -91,34 +78,25 @@ module.exports = class SharedData {
      */
     deserialize(data) {
         return v8.deserialize(
-            new Buffer.from(
-                this.#typeConfigurator[this.#type](data || this.#getData())
-            )
+            Buffer.from(data || this.#shareDataBuffer)
         );
     }
-    #getData() {
-        Atomics.wait(this.#data, 0, 0);
-        const result = this.#data.map((element, index) => {
-            return this.#data[index + 1];
-        })
-        return result;
-    }
-    mutex(size) {
-        this.#data[0] = size;
-    };
-    lock(callback = () => { }) {
-        Atomics.wait(this.#data, 0, 0);
-        Atomics.sub(this.#data, 0, 1);
-        Atomics.notify(this.#data, 0)
-        this.#owner = true;
-        setTimeout(callback, 0);
-    }
-    unlock(callback = () => { }) {
-        if (this.#owner) {
-            Atomics.add(this.#data, 0, 1);
-            Atomics.notify(this.#data, 0)
-            this.#owner = false
-            setTimeout(callback, 0);
-        }
-    }
+    // mutex(size) {
+    //     this.#data[0] = size;
+    // };
+    // lock(callback = () => { }) {
+    //     Atomics.wait(this.#data, 0, 0);
+    //     Atomics.sub(this.#data, 0, 1);
+    //     Atomics.notify(this.#data, 0)
+    //     this.#owner = true;
+    //     setTimeout(callback, 0);
+    // }
+    // unlock(callback = () => { }) {
+    //     if (this.#owner) {
+    //         Atomics.add(this.#data, 0, 1);
+    //         Atomics.notify(this.#data, 0)
+    //         this.#owner = false
+    //         setTimeout(callback, 0);
+    //     }
+    // }
 }
