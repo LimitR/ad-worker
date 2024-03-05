@@ -1,13 +1,7 @@
-export class ChildWorker {
-    constructor(_workerData?: {
-        sharedData: {
-            length: number;
-            type: string;
-        };
-        value: any;
-    });
-    onMessage(callback: any): void;
-    onceMessage(callback: any): void;
+export = ChildWorker;
+declare class ChildWorker {
+    onMessage(callback: (msg: any) => void): void;
+    onceMessage(callback: (msg: any) => void): void;
     sendMessage(msg: any): void;
     /**
      * @param {*} msg Your data

@@ -14,6 +14,7 @@
     "test": "echo \"No test specified\""
   },
   "author": "LimitR",
+  "type": "module",
   "license": "ISC",
   "directories": {},
   "repository": {

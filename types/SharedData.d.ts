@@ -1,4 +1,5 @@
-export class SharedData {
+export = SharedData;
+declare class SharedData {
     /**
      * @param {number} length Size BufferArray
      * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} type Type BufferArray
@@ -11,7 +12,7 @@ export class SharedData {
      * @description It's method return new class SharedData, with SharedArrayBuffer
      * @returns {SharedData}
      */
-    new(data: any): SharedData;
+    new(data: workerData): SharedData;
     /**
      * @param {Object|Array|string|number|boolean} data
      * @returns {array}
@@ -19,7 +20,7 @@ export class SharedData {
     add(data: any | any[] | string | number | boolean): any[];
     /**
      * @param {Object|Array|string|number|boolean} data
-     * @description Atomics method
+     * @description Not atomics method
      */
     na_add(data: any | any[] | string | number | boolean): void;
     /**
@@ -30,7 +31,7 @@ export class SharedData {
     /**
      * @param {number} from from index
      * @param {number} to to index
-     * @returns {number[]} number[] - Array bytes
+     * @returns {array} number[] - Array bytes
      */
     get(from: number, to: number): any[];
     /**
@@ -40,8 +41,5 @@ export class SharedData {
      * @returns {Promise} Any data from argument or a class context
      */
     deserialize(data: SharedArrayBuffer | null): any;
-    mutex(size: any): void;
-    lock(callback?: () => void): void;
-    unlock(callback?: () => void): void;
     #private;
 }

@@ -1,7 +1,10 @@
 "use strict";
-const v8 = require('v8');
-module.exports = class SharedData {
+import v8 from 'v8';
+
+export class SharedData {
     #data;
+    #type;
+    #owner;
     #shareDataBuffer;
     /**
      * @param {number} length Size BufferArray

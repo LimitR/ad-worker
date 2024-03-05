@@ -1,32 +1,6 @@
-type ParamsConstructorMainWorker = {
-    group: {
-        name: string;
-        path: string;
-        workerData?: any;
-        workerDataLink?: string;
-        mutex: number;
-    };
-    sharedData: {
-        length: number;
-        type: 'int8' | 'int16' | 'int32' | 'uint8' | 'uint16' | 'uint32' | 'float32' | 'float64';
-    };
-    mutex?: number | 1
-}
-
-export class MainWorker {
-    /**
-     * @param {Object} params
-     * @param {Object[]} params.group
-     * @param {string} params.group[].name
-     * @param {string} params.group[].path
-     * @param {Object} [params.group[].workerData]
-     * @param {string} [params.group[].workerDataLink]
-     * @param {number} params.group[].mutex
-     * @param {Object} params.sharedData
-     * @param {number} params.sharedData.length Size BufferArray
-     * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} params.sharedData.type Type BufferArray
-     */
-    constructor(params?: ParamsConstructorMainWorker);
+export = MainWorker;
+declare class MainWorker {
+    constructor(params: any);
     path: string;
     /**
      * @param {string} name Name thread
@@ -61,9 +35,8 @@ export class MainWorker {
      * @param {*} callback Fuction callback
      * @description Using for getting share data
      */
-    getSharedData(name: string): Error;
-
-    setSharedData(name: string, msg: any): void
+    getSharedData(name: string): any;
+    setSharedData(name: any, msg: any): void;
     /**
      * @param {Object} params
      * @param {string} params.name
@@ -75,19 +48,17 @@ export class MainWorker {
      * @param {number} params.sharedData.length Size BufferArray
      * @param {'int8'|'int16'|'int32'|'uint8'|'uint16'|'uint32'|'float32'|'float64'} params.sharedData.type Type BufferArray
      */
-    newThread(params: ParamsNewThread): Error;
+    newThread(params: {
+        name: string;
+        path: string;
+        workerData?: any;
+        workerDataLink?: string;
+        mutex: number;
+        sharedData: {
+            length: number;
+            type: 'int8' | 'int16' | 'int32' | 'uint8' | 'uint16' | 'uint32' | 'float32' | 'float64';
+        };
+    }): Error;
     spawn(callback: any): any;
     #private;
-}
-
-type ParamsNewThread = {
-    name: string;
-    path: string;
-    workerData?: any;
-    workerDataLink?: string;
-    mutex?: number;
-    sharedData?: {
-        length: number;
-        type: 'int8' | 'int16' | 'int32' | 'uint8' | 'uint16' | 'uint32' | 'float32' | 'float64';
-    }
 }

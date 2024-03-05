@@ -1,11 +1,13 @@
-const SharedData = require("./libs/SharedData");
-const ChildWorker = require("./libs/ChildWorker");
-const MainWorker = require("./libs/MainWorker");
-const Pool = require("./libs/Pool");
+import {SharedData} from "./libs/SharedData.js";
+import {ChildWorker} from "./libs/ChildWorker.js";
+import {MainWorker} from "./libs/MainWorker.js";
+import {Pool} from "./libs/Pool.js";
+import {go} from './libs/go.js';
 
-module.exports = {
+export {
     SharedData,
     ChildWorker,
     MainWorker,
-    Pool
+    Pool,
+    go
 }

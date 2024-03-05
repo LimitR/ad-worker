@@ -1,8 +1,8 @@
 "use strict";
-const { Worker } = require('node:worker_threads');
-const SharedData = require("./SharedData");
+import { Worker } from 'node:worker_threads';
+import { SharedData } from "./SharedData.js";
 
-module.exports = class Pool {
+export class Pool {
     #pool = {};
     #sharedData;
     /**
@@ -15,7 +15,7 @@ module.exports = class Pool {
     */
     constructor({ path, sharedDatas, quantityThread, workerData }) {
         this.#sharedData = new SharedData(sharedDatas?.length || 1024, sharedDatas?.type || 'int32');
-        this.#sharedData.mutex(1);
+        // this.#sharedData.mutex(1);
         this.#sharedData.na_add(workerData || {});
         for (let i = 0; i < quantityThread; i++) {
             this.#pool[i] =
@@ -35,7 +35,7 @@ module.exports = class Pool {
         pool.thread.postMessage(message);
         const _cb = (res) => {
             pool.count -= 1;
-            return callback( pool.id + " " +res)
+            return callback(res)
         }
         pool.thread.once("message", _cb);
     }

@@ -4,6 +4,19 @@
 npm i ad-worker
 ```
 This library allows spawn threads and transfer control by name, with an isolated context, or shared data between threads.
+
+## Run function
+```javascript
+import { go } from 'ad-worker';
+
+const result = await go(function(){
+    // Run your script
+});
+
+console.log(result); // Result or undefined
+```
+
+
 ## Example
 ```javascript
 // main.js
@@ -93,7 +106,7 @@ mainWorker.getSharedData("test", msg => {
 // main.js
 const { Pool }  = require("ad-worker");
 
-const threadPool = new Pool({ path: './test.js', quantityThread: 10 })
+const threadPool = new Pool({ path: './worker.js', quantityThread: 10 })
 threadPool.sendMessage('SELECT * FROM table', (res) => {
     console.log(res); // ['Sasha', 'Pasha', 'Oleg']
 })
@@ -111,3 +124,4 @@ childWorker.onMessage(async (msg) => {
     childWorker.sendMessage('done');
 });
 ```
+

@@ -1,8 +1,8 @@
 "use strict";
-const { Worker, isMainThread } = require('node:worker_threads');
-const SharedData = require("./SharedData");
+import { Worker, isMainThread } from 'node:worker_threads';
+import { SharedData } from "./SharedData.js";
 
-module.exports = class MainWorker {
+export class MainWorker {
     #group = {};
     #sharedData = {};
     constructor(params) {

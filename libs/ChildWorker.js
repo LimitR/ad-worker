@@ -1,7 +1,7 @@
 "use strict";
-const { parentPort, workerData } = require('node:worker_threads');
-const v8 = require('v8');
-module.exports = class ChildWorker {
+import { parentPort, workerData } from 'node:worker_threads';
+import v8 from 'v8';
+export class ChildWorker {
     #sharedData;
     constructor() {
         this.#sharedData = Buffer.from(workerData || {})
