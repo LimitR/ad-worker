@@ -1,6 +1,6 @@
 {
   "name": "ad-worker",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Library for creating and managing threads (Node.js )",
   "main": "index.js",
   "exports": {
